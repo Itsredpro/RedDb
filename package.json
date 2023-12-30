@@ -1,0 +1,14 @@
+{
+  "name": "reddbv6.5",
+  "version": "6.5.3",
+  "description": "RedDb release V6.5 - Fix 6.5.3: Onready fires more accurate now, ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "reddb"
+  ],
+  "author": "itsredstonepro#0979",
+  "license": "ISC"
+}
