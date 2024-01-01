@@ -41,7 +41,7 @@ class reddbDatabaseHandle {
 
             if (doThrow){
                 this.destroy()
-                this = null;
+                
                 return null
             }
 
