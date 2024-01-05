@@ -10,7 +10,7 @@ module.exports.throwDangerousData = true
 class reddbDatabaseHandle {
     constructor(dbname, dbpath,dbmaxsize=100000, done,destroy){
         if (typeof dbname != "string" || typeof dbpath != "string" || typeof dbmaxsize != ('number' || 'bigint')){
-            throw new error("[Reddb] [internal handle] - CRIT ERR!: invalid constructor input types!")
+            throw error("[Reddb] [internal handle] - CRIT ERR!: invalid constructor input types!")
         }
         this.cache = {}
         this.filepath = dbpath
@@ -19,7 +19,7 @@ class reddbDatabaseHandle {
         this.loaded = false
         
 
-        var doThrow = false
+        var doThrow = false;
 
         (async ()=>{
             try {
@@ -36,7 +36,7 @@ class reddbDatabaseHandle {
                     this.cache = jsonData
                 }
             } catch(e){
-                throw new error("[Reddb] [internal handle] - CRIT ERROR!: Nodejs ERR: " + e)
+                throw error("[Reddb] [internal handle] - CRIT ERROR!: Nodejs ERR: " + e)
             }
 
             if (doThrow){
@@ -50,17 +50,17 @@ class reddbDatabaseHandle {
         })()
     }
 
-    get save(){
+    save(){
         (async ()=>{
             try {
-                await fs.writeFileSync(path, JSON.stringify(this.cache))
+                await fs.writeFileSync(this.filepath, JSON.stringify(this.cache))
             } catch (e){
                 console.warn(`[Reddb] [internal handle] - CRIT WARNING!: Failed to write data to ${this.filepath}.\nError Message:\n${e}`)
             }
         })()
     }
 
-    set edit({key,value}){
+    edit({key,value}){
         //if no value, then do not edit
 
         if (!key){
@@ -72,7 +72,7 @@ class reddbDatabaseHandle {
 
         return this.cache[key]
     }
-    set exist(key){
+    exist(key){
         return this.cache[key] === undefined ? false : true
     }
 
@@ -94,16 +94,20 @@ class reddbDatabase {
 
         this.cInterval = setInterval(saver, this.saveTimeMS)
     }
-    get loadData(){
+    loadData(){
         if (typeof this.DBNAME != "string" || this.DBNAME == ''){
             warn("[Reddb] [internal] - WARNING! No database name set!")
             return null
         }
 
         return new Promise(async (resolve, reject)=>{
+            if (this.DBNAME.indexOf(".") != -1){
+                console.error("[Reddb] [internal] - DB name may not contain a file extention (ie a .)")
+            }
+                
             const constructedPath = module.exports.databaseheadpath + '/' + this.DBNAME + module.exports.extentiontype
             if (!await fs.existsSync(constructedPath)){
-                throw new error("[Reddb] [internal] - CRITICAL ERROR!: Database not found at constructed path!")
+                throw error("[Reddb] [internal] - CRITICAL ERROR!: Database not found at constructed path! " + constructedPath)
             }
 
             this.handle = new reddbDatabaseHandle(this.DBNAME, constructedPath, this.dbcharsize, ()=>{
@@ -111,7 +115,7 @@ class reddbDatabase {
                 resolve()
             }, ()=>{
                 //Destroy self
-                this = null;
+                this.forEach((i)=>i = null)
                 reject()
             })
 
@@ -119,7 +123,7 @@ class reddbDatabase {
             
         })
     }
-    get onReady(){
+    onReady(){
         if (this.databaseLoaded){
             return null
         }
@@ -140,7 +144,7 @@ class reddbDatabase {
         })
     }
 
-    set setName(name){
+    setName(name){
         if (typeof name != 'string' || name == ''){
             return null
         }
@@ -150,19 +154,19 @@ class reddbDatabase {
         }
         this.DBNAME = name
     }
-    set setData({key,value}){
+    setData(key,value){
         if (!this.databaseLoaded){
             console.warn('[Reddb] [internal] Database not loaded yet.')
             return null
         }
-        if (typeof key != 'string' || key == '' || !value){
+        if (typeof key != 'string' || key == '' || value == undefined){
             console.error('[Reddb] [internal] Invalid data type or missing value for key/value.')
             return null
         }
         return this.handle.edit({key,value})
        
     }
-    set getData(key){
+    getData(key){
         if (!this.databaseLoaded){
             console.warn('[Reddb] [internal] Database not loaded yet.')
             return null
@@ -178,11 +182,12 @@ class reddbDatabase {
         }
         
     }
-    set setSaveInterval(intervalMS){
+    setSaveInterval(intervalMS){
         clearInterval(this.cInterval)
         this.saveTimeMS = intervalMS
         this.cInterval = setInterval(saver, this.saveTimeMS)
     }
+    
 }
 
 module.exports.reddb = reddbDatabase
