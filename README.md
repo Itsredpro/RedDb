@@ -1,4 +1,5 @@
-# Reddb Database Documentation
+# Reddb Database System
+[![CodeFactor](https://www.codefactor.io/repository/github/itsredpro/reddb/badge)](https://www.codefactor.io/repository/github/itsredpro/reddb)
 
 ## Overview
 
