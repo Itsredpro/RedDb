@@ -22,7 +22,7 @@ npm install reddb
 
 ## Module Configuration
 
-(I) = Internal use case. Modify with caution.
+(I) = Internal use case. Modify/Use with caution.
 
 The module provides some configuration options that can be set before using it. These options are defined in the module's exports:
 
@@ -55,7 +55,7 @@ The `reddbDatabaseHandle` class is responsible for handling individual databases
 ### Methods
 
 - `save`: Asynchronously saves the current state of the database to the file. 
-- `edit`: Allows modification of the database by setting a key-value pair. (I)
+- `edit`: Allows modification or reading of the database by inputting a key-value pair or only a key for reading. (I)
 - `exist`: Checks if a key exists in the database.
 
 ## `reddbDatabase` Class
